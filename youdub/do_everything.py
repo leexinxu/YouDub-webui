@@ -27,17 +27,24 @@ def process_video(info, root_folder, resolution, demucs_model, device, shifts, w
     
     for retry in range(max_retries):
         try:
+            if info is None:
+                logger.warning('video info is None')
+                return False
             folder = get_target_folder(info, root_folder)
             if folder is None:
                 logger.warning(f'Failed to get target folder for video {info["title"]}')
                 return False
             
-            if os.path.exists(os.path.join(folder, 'bilibili.json')):
-                with open(os.path.join(folder, 'bilibili.json'), 'r', encoding='utf-8') as f:
-                    bilibili_info = json.load(f)
-                if bilibili_info['results'][0]['code'] == 0:
-                    logger.info(f'Video already uploaded in {folder}')
-                    return True
+            # if os.path.exists(os.path.join(folder, 'bilibili.json')):
+            #     with open(os.path.join(folder, 'bilibili.json'), 'r', encoding='utf-8') as f:
+            #         bilibili_info = json.load(f)
+            #     if bilibili_info['results'][0]['code'] == 0:
+            #         logger.info(f'Video already uploaded in {folder}')
+            #         return True
+
+            if os.path.exists(os.path.join(folder, 'ok.json')):
+                logger.info(f'Video already ok in {folder}')
+                return True
                 
             folder = download_single_video(info, root_folder, resolution)
             if folder is None:
@@ -68,6 +75,10 @@ def process_video(info, root_folder, resolution, demucs_model, device, shifts, w
             if auto_upload_video:
                 time.sleep(1)
                 upload_all_videos_under_folder(folder)
+            
+            with open(os.path.join(folder, 'ok.json'), 'w', encoding='utf-8') as f:
+                json.dump({}, f, ensure_ascii=False, indent=4)
+
             return True
         except Exception as e:
             logger.error(f'Error processing video {info["title"]}: {e}')

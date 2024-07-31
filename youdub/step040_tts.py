@@ -9,6 +9,7 @@ import numpy as np
 from .utils import save_wav, save_wav_norm
 from .step041_tts_bytedance import tts as bytedance_tts
 from .step042_tts_xtts import tts as xtts_tts
+from .step043_tts_chattts import tts as chattts_tts
 from .cn_tx import TextNorm
 from audiostretchy.stretch import stretch_audio
 normalizer = TextNorm()
@@ -52,12 +53,15 @@ def generate_wavs(folder, force_bytedance=False):
         text = preprocess_text(line['translation'])
         output_path = os.path.join(output_folder, f'{str(i).zfill(4)}.wav')
         speaker_wav = os.path.join(folder, 'SPEAKER', f'{speaker}.wav')
-        if num_speakers == 1:
-            bytedance_tts(text, output_path, speaker_wav, voice_type='BV701_streaming')
-        elif force_bytedance:
-            bytedance_tts(text, output_path, speaker_wav)
-        else:
-            xtts_tts(text, output_path, speaker_wav)
+        # if num_speakers == 1:
+        #     bytedance_tts(text, output_path, speaker_wav, voice_type='BV701_streaming')
+        # elif force_bytedance:
+        #     bytedance_tts(text, output_path, speaker_wav)
+        # else:
+        #     xtts_tts(text, output_path, speaker_wav)
+        
+        chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb.pt')
+
         start = line['start']
         end = line['end']
         length = end-start
