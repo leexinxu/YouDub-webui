@@ -8,7 +8,7 @@ import numpy as np
 
 from .utils import save_wav, save_wav_norm
 from .step041_tts_bytedance import tts as bytedance_tts
-from .step042_tts_xtts import tts as xtts_tts
+#from .step042_tts_xtts import tts as xtts_tts
 from .step043_tts_chattts import tts as chattts_tts
 from .cn_tx import TextNorm
 from audiostretchy.stretch import stretch_audio

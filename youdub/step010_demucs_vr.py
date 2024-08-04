@@ -5,7 +5,7 @@ from loguru import logger
 import time
 from .utils import save_wav, normalize_wav
 import torch
-auto_device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+auto_device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
 separator = None
 
 def init_demucs():
