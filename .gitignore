@@ -170,3 +170,6 @@ launch.json
 remove_mp4.py
 
 test/
+videos_test/
+videos_zh2en/
+.DS_Store
