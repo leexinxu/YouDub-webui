@@ -173,3 +173,4 @@ test/
 videos_test/
 videos_zh2en/
 .DS_Store
+videos_*/
