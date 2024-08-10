@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from pyannote.audio import Model, Inference
 from scipy.spatial.distance import cosine
 import shutil
+import soundfile as sf
 
 load_dotenv()
 # 填写平台申请的appid, access_token以及cluster
@@ -100,7 +101,7 @@ def generate_speaker_to_voice_type(folder):
 
 def tts(text, output_path, speaker_wav, voice_type=None):
     if os.path.exists(output_path):
-        logger.info(f'火山TTS {text} 已存在')
+        logger.info(f'ChatTTS {text} 已存在')
         return
     folder = os.path.dirname(os.path.dirname(output_path))
     if voice_type is None:
@@ -110,7 +111,7 @@ def tts(text, output_path, speaker_wav, voice_type=None):
     for retry in range(3):
         try:
             api_url = "http://127.0.0.1:9966/tts"
-            data = {"text":text.strip(),"voice": 'seed_2222_restored_emb.pt','prompt':'','is_split':1,"speed": 8,"temperature": 0.1}
+            data = {"text":text.strip(),"voice": 'seed_2222_restored_emb-covert.pt','prompt':'','is_split':1,"speed": 8,"temperature": 0.1}
             res = requests.post(api_url,data=data,proxies={"http":"","https":""},timeout=3600)
             res=res.json()
             if "url" in res:
@@ -123,6 +124,10 @@ def tts(text, output_path, speaker_wav, voice_type=None):
                             f.write(resb.content)
                     # ensure the file is saved
                     wav, sample_rate = librosa.load(output_path, sr=24000)
+
+                    # Save the audio as Linear PCM, 16-bit, little-endian, signed integer, 24000 Hz
+                    sf.write(output_path, wav, sample_rate, subtype='PCM_16')
+
                     logger.info(f'ChatTTS {text} 保存成功: {output_path}')
                     time.sleep(0.1)
                     break
@@ -174,5 +179,5 @@ if __name__ == '__main__':
     #get_available_speakers()
     text = 'hello，你好，123。'
     output_path = f'test/hello.wav'
-    voice_type = 'seed_2222_restored_emb.pt'
+    voice_type = 'seed_2222_restored_emb-covert.pt'
     tts(text=text, output_path=output_path, speaker_wav=None, voice_type=voice_type)
