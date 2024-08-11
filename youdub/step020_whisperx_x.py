@@ -33,7 +33,11 @@ def load_whisper_model(model_name: str = 'large-v3', download_root = 'models/ASR
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
     logger.info(f'Loading WhisperX model: {model_name}')
     t_start = time.time()
-    whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='float32')
+
+    asr_options =  {
+        "initial_prompt": "add punctuation after end of each line. 就比如说，我要先去吃饭。segment at end of each  sentence."
+    }
+    whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='float32', asr_options=asr_options)
     t_end = time.time()
     logger.info(f'Loaded WhisperX model: {model_name} in {t_end - t_start:.2f}s')
 
@@ -86,7 +90,7 @@ def merge_segments(transcript, ending='!"\').:;?]}~'):
 
     return merged_transcription
 
-def transcribe_audio(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=True,min_speakers=None, max_speakers=None):
+def transcribe_audio(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=8, diarization=True,min_speakers=None, max_speakers=None):
     if os.path.exists(os.path.join(folder, 'transcript.json')):
         logger.info(f'Transcript already exists in {folder}')
         return True
@@ -159,7 +163,7 @@ def generate_speaker_audio(folder, transcript):
         save_wav(audio, speaker_file_path)
             
 
-def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=True, min_speakers=None, max_speakers=None):
+def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=8, diarization=True, min_speakers=None, max_speakers=None):
     for root, dirs, files in os.walk(folder):
         if 'audio_vocals.wav' in files and 'transcript.json' not in files:
             transcribe_audio(root, model_name,
@@ -167,6 +171,6 @@ def transcribe_all_audio_under_folder(folder, model_name: str = 'large', downloa
     return f'Transcribed all audio under {folder}'
 
 if __name__ == '__main__':
-    transcribe_all_audio_under_folder('videos')
+    transcribe_all_audio_under_folder('videos_test/猫村猫村/20240807 假如鲁迅活在2024未必有人当爹当的过他鲁迅的教育理念是什么')
     
     
