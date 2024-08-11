@@ -9,7 +9,7 @@ from loguru import logger
 
 load_dotenv()
 
-model_name = os.getenv('MODEL_NAME', 'gpt-3.5-turbo')
+model_name = os.getenv('MODEL_NAME_X', 'gpt-3.5-turbo')
 print(f'using model {model_name}')
 if model_name == "01ai/Yi-34B-Chat-4bits":
     extra_body = {
