@@ -15,7 +15,7 @@ while True:
         whisper_model='large',
         whisper_download_root='models/ASR/whisper',
         whisper_batch_size=8,
-        whisper_diarization=True,
+        whisper_diarization=False,
         whisper_min_speakers=None,
         whisper_max_speakers=None,
         translation_target_language='English',
