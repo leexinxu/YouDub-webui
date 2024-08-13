@@ -35,7 +35,7 @@ def load_whisper_model(model_name: str = 'large-v3', download_root = 'models/ASR
     t_start = time.time()
 
     asr_options =  {
-        "initial_prompt": "add punctuation after end of each line. 就比如说，我要先去吃饭。segment at end of each  sentence."
+        "initial_prompt": "以下是中文普通话句子。",
     }
     whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='float32', asr_options=asr_options)
     t_end = time.time()
@@ -171,6 +171,6 @@ def transcribe_all_audio_under_folder(folder, model_name: str = 'large', downloa
     return f'Transcribed all audio under {folder}'
 
 if __name__ == '__main__':
-    transcribe_all_audio_under_folder('videos_test/猫村猫村/20240807 假如鲁迅活在2024未必有人当爹当的过他鲁迅的教育理念是什么')
+    transcribe_all_audio_under_folder('/Volumes/Data/AI/YouDub-webui/videos_test/猫村猫村/20240807 假如鲁迅活在2024未必有人当爹当的过他鲁迅的教育理念是什么')
     
     

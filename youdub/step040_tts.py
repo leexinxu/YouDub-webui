@@ -22,7 +22,7 @@ def preprocess_text(text):
     return text
     
     
-def adjust_audio_length(wav_path, desired_length, sample_rate = 24000, min_speed_factor = 0.6, max_speed_factor = 1.1):
+def adjust_audio_length(wav_path, desired_length, sample_rate = 24000, min_speed_factor = 0.8, max_speed_factor = 1.05):
     wav, sample_rate = librosa.load(wav_path, sr=sample_rate)
     current_length = len(wav)/sample_rate
     speed_factor = max(
