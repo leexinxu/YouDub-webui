@@ -4,7 +4,7 @@ import time
 from loguru import logger
 from .step000_video_downloader_x import get_info_list_from_url, download_single_video, get_target_folder
 from .step010_demucs_vr import separate_all_audio_under_folder, init_demucs
-from .step020_whisperx import transcribe_all_audio_under_folder, init_whisperx
+from .step020_whisperx_zh import transcribe_all_audio_under_folder, init_whisperx
 from .step030_translation_x import translate_all_transcript_under_folder
 from .step040_tts import generate_all_wavs_under_folder
 #from .step042_tts_xtts import init_TTS
