@@ -21,7 +21,7 @@ align_metadata = None
 def init_whisperx():
     load_whisper_model()
     load_align_model()
-    load_diarize_model()
+    #load_diarize_model()
     
 def load_whisper_model(model_name: str = 'large-v3', download_root = 'models/ASR/whisper', device='auto'):
     if model_name == 'large':
@@ -90,6 +90,27 @@ def merge_segments(transcript, ending='!"\').:;?]}~'):
 
     return merged_transcription
 
+def filter_segments(transcript, min_duration=0.1):
+    filtered_transcription = []
+
+    for segment in transcript:
+        duration = segment['end'] - segment['start']
+        if duration >= min_duration:
+            filtered_transcription.append(segment)
+
+    return filtered_transcription
+
+def remove_placeholders(transcript, placeholder_list=["中文普通话句子"]):
+    filtered_transcription = []
+    for segment in transcript:
+        text = segment['text']
+        for placeholder in placeholder_list:
+            text = text.replace(placeholder, "").strip()  # 去掉占位符并移除两端多余的空格
+        if text:  # 如果去掉占位符后还有内容则保留该段
+            segment['text'] = text
+            filtered_transcription.append(segment)
+    return filtered_transcription
+
 def transcribe_audio(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=8, diarization=True,min_speakers=None, max_speakers=None):
     if os.path.exists(os.path.join(folder, 'transcript.json')):
         logger.info(f'Transcript already exists in {folder}')
@@ -103,10 +124,12 @@ def transcribe_audio(folder, model_name: str = 'large', download_root='models/AS
     if device == 'auto':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
     load_whisper_model(model_name, download_root, device)
-    rec_result = whisper_model.transcribe(wav_path, batch_size=batch_size)
+    rec_result = whisper_model.transcribe(wav_path, batch_size=batch_size,chunk_size=6)
 
     with open(os.path.join(folder, 'whisper_model.transcribe.rec_result.json'), 'w', encoding='utf-8') as f:
         json.dump(rec_result, f, indent=4, ensure_ascii=False)
+
+    #rec_result = json.load(open(os.path.join(folder, 'whisper_model.transcribe.rec_result.json'), 'r', encoding='utf-8'))
 
     if rec_result['language'] == 'nn':
         logger.warning(f'No language detected in {wav_path}')
@@ -128,11 +151,18 @@ def transcribe_audio(folder, model_name: str = 'large', download_root='models/AS
         json.dump(rec_result, f, indent=4, ensure_ascii=False)
 
     transcript = [{'start': segement['start'], 'end': segement['end'], 'text': segement['text'].strip(), 'speaker': segement.get('speaker', 'SPEAKER_00')} for segement in rec_result['segments']]
-    
+
     with open(os.path.join(folder, 'rec_result2transcript.json'), 'w', encoding='utf-8') as f:
         json.dump(transcript, f, indent=4, ensure_ascii=False)
 
-    transcript = merge_segments(transcript)
+    transcript = merge_segments(transcript, ending='。！？；：,')
+
+    with open(os.path.join(folder, 'transcript.merge_segments.json'), 'w', encoding='utf-8') as f:
+        json.dump(transcript, f, indent=4, ensure_ascii=False)
+
+    transcript = filter_segments(transcript)
+
+    transcript = remove_placeholders(transcript, placeholder_list=["中文普通话句子"])
 
     with open(os.path.join(folder, 'transcript.json'), 'w', encoding='utf-8') as f:
         json.dump(transcript, f, indent=4, ensure_ascii=False)
@@ -163,7 +193,7 @@ def generate_speaker_audio(folder, transcript):
         save_wav(audio, speaker_file_path)
             
 
-def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=8, diarization=True, min_speakers=None, max_speakers=None):
+def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=True, min_speakers=None, max_speakers=None):
     for root, dirs, files in os.walk(folder):
         if 'audio_vocals.wav' in files and 'transcript.json' not in files:
             transcribe_audio(root, model_name,
@@ -171,6 +201,6 @@ def transcribe_all_audio_under_folder(folder, model_name: str = 'large', downloa
     return f'Transcribed all audio under {folder}'
 
 if __name__ == '__main__':
-    transcribe_all_audio_under_folder('/Volumes/Data/AI/YouDub-webui/videos_test/猫村猫村/20240807 假如鲁迅活在2024未必有人当爹当的过他鲁迅的教育理念是什么')
+    transcribe_all_audio_under_folder('videos_test/雷军/20240718 雷军怎么还有雷军进行曲这个曲子呢', batch_size=8, diarization=False)
     
     
