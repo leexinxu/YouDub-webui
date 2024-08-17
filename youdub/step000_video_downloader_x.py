@@ -48,6 +48,7 @@ def download_single_video(info, folder_path, resolution='1080p'):
         'outtmpl': os.path.join(folder_path, sanitized_uploader, f'{upload_date} {sanitized_title}', 'download'),
         'ignoreerrors': True,
         'cookiefile': 'bilibili_cookies.txt',
+        'download_archive': 'downloaded_x.txt',  # 记录已下载视频的文件
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
