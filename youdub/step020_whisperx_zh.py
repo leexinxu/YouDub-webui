@@ -162,7 +162,7 @@ def transcribe_audio(folder, model_name: str = 'large', download_root='models/AS
 
     transcript = filter_segments(transcript)
 
-    transcript = remove_placeholders(transcript, placeholder_list=["中文普通话句子"])
+    transcript = remove_placeholders(transcript, placeholder_list=["中文普通话句子","中文普通话"])
 
     with open(os.path.join(folder, 'transcript.json'), 'w', encoding='utf-8') as f:
         json.dump(transcript, f, indent=4, ensure_ascii=False)
@@ -198,6 +198,7 @@ def transcribe_all_audio_under_folder(folder, model_name: str = 'large', downloa
         if 'audio_vocals.wav' in files and 'transcript.json' not in files:
             transcribe_audio(root, model_name,
                              download_root, device, batch_size, diarization, min_speakers, max_speakers)
+    logger.info(f'Transcribed all audio under {folder}')
     return f'Transcribed all audio under {folder}'
 
 if __name__ == '__main__':
