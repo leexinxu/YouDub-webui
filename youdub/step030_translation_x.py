@@ -26,7 +26,7 @@ def get_necessary_info(info: dict):
         'uploader': info['uploader'],
         'description': info['description'],
         'upload_date': info['upload_date'],
-        #'categories': info['categories'],
+        'categories': info.get('categories', []),
         'tags': info['tags'],
     }
 
