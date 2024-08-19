@@ -37,7 +37,7 @@ def load_whisper_model(model_name: str = 'large-v3', download_root = 'models/ASR
     asr_options =  {
         "initial_prompt": "以下是中文普通话句子。",
     }
-    whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='float32', asr_options=asr_options)
+    whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='int8', asr_options=asr_options)
     t_end = time.time()
     logger.info(f'Loaded WhisperX model: {model_name} in {t_end - t_start:.2f}s')
 
@@ -111,7 +111,7 @@ def remove_placeholders(transcript, placeholder_list=["中文普通话句子"]):
             filtered_transcription.append(segment)
     return filtered_transcription
 
-def transcribe_audio(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=8, diarization=True,min_speakers=None, max_speakers=None):
+def transcribe_audio(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=8, diarization=False,min_speakers=None, max_speakers=None):
     if os.path.exists(os.path.join(folder, 'transcript.json')):
         logger.info(f'Transcript already exists in {folder}')
         return True
@@ -193,7 +193,7 @@ def generate_speaker_audio(folder, transcript):
         save_wav(audio, speaker_file_path)
             
 
-def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=True, min_speakers=None, max_speakers=None):
+def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=False, min_speakers=None, max_speakers=None):
     for root, dirs, files in os.walk(folder):
         if 'audio_vocals.wav' in files and 'transcript.json' not in files:
             transcribe_audio(root, model_name,
@@ -202,6 +202,6 @@ def transcribe_all_audio_under_folder(folder, model_name: str = 'large', downloa
     return f'Transcribed all audio under {folder}'
 
 if __name__ == '__main__':
-    transcribe_all_audio_under_folder('videos_test/雷军/20240718 雷军怎么还有雷军进行曲这个曲子呢', batch_size=8, diarization=False)
+    transcribe_all_audio_under_folder('videos_test/雷军/20240718 雷军怎么还有雷军进行曲这个曲子呢', batch_size=16)
     
     

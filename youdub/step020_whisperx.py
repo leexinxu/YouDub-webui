@@ -33,7 +33,7 @@ def load_whisper_model(model_name: str = 'large-v3', download_root = 'models/ASR
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
     logger.info(f'Loading WhisperX model: {model_name}')
     t_start = time.time()
-    whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='float32')
+    whisper_model = whisperx.load_model(model_name, download_root=download_root, device=device, compute_type='int8')
     t_end = time.time()
     logger.info(f'Loaded WhisperX model: {model_name} in {t_end - t_start:.2f}s')
 
@@ -86,7 +86,7 @@ def merge_segments(transcript, ending='!"\').:;?]}~'):
 
     return merged_transcription
 
-def transcribe_audio(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=True,min_speakers=None, max_speakers=None):
+def transcribe_audio(folder, model_name: str = 'distil-large-v2', download_root='models/ASR/whisper', device='auto', batch_size=16, diarization=False,min_speakers=None, max_speakers=None):
     if os.path.exists(os.path.join(folder, 'transcript.json')):
         logger.info(f'Transcript already exists in {folder}')
         return True
@@ -99,7 +99,7 @@ def transcribe_audio(folder, model_name: str = 'large', download_root='models/AS
     if device == 'auto':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
     load_whisper_model(model_name, download_root, device)
-    rec_result = whisper_model.transcribe(wav_path, batch_size=batch_size)
+    rec_result = whisper_model.transcribe(wav_path, batch_size=batch_size,chunk_size=25)
     
     if rec_result['language'] == 'nn':
         logger.warning(f'No language detected in {wav_path}')
@@ -145,7 +145,7 @@ def generate_speaker_audio(folder, transcript):
         save_wav(audio, speaker_file_path)
             
 
-def transcribe_all_audio_under_folder(folder, model_name: str = 'large', download_root='models/ASR/whisper', device='auto', batch_size=32, diarization=True, min_speakers=None, max_speakers=None):
+def transcribe_all_audio_under_folder(folder, model_name: str = 'distil-large-v2', download_root='models/ASR/whisper', device='auto', batch_size=16, diarization=False, min_speakers=None, max_speakers=None):
     for root, dirs, files in os.walk(folder):
         if 'audio_vocals.wav' in files and 'transcript.json' not in files:
             transcribe_audio(root, model_name,
@@ -153,6 +153,6 @@ def transcribe_all_audio_under_folder(folder, model_name: str = 'large', downloa
     return f'Transcribed all audio under {folder}'
 
 if __name__ == '__main__':
-    transcribe_all_audio_under_folder('videos')
+    transcribe_all_audio_under_folder('videos_test/MDR/20240703 Recognizing Palestine as part of a peace process shortvideo shorts')
     
     
