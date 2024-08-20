@@ -104,9 +104,9 @@ else:
     do_everything_zh2en()
     set_next_task('x2zh')
 
-# 等待 10 分钟后重启程序
-print("等待 10 分钟后重启程序...")
-time.sleep(60 * 10)
+# 等待 3 分钟后重启程序
+print("等待 3 分钟后重启程序...")
+time.sleep(60 * 3)
 
 # 重启脚本以确保内存完全释放
 restart_program()
