@@ -12,8 +12,8 @@ def do_everything_x2zh():
 
     print("执行，X译中，任务。。。。。。")
     do_everything(
-        root_folder='videos_20240808',
-        url='https://www.youtube.com/playlist?list=PLxjtcx2z5_41az-SgsVydfeogWu8nQkMe',
+        root_folder='videos_20240821',
+        url='https://youtube.com/playlist?list=PLxjtcx2z5_439PyJFNx4XOS0qos6en-a-',
         num_videos=10000,
         resolution='1080p',
         demucs_model='htdemucs_ft',

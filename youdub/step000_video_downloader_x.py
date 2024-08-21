@@ -69,7 +69,8 @@ def get_info_list_from_url(url, num_videos):
         #'format': 'best',
         'dumpjson': True,
         'playlistend': num_videos,
-        'ignoreerrors': True
+        'ignoreerrors': True,
+        'download_archive': 'downloaded_x.txt',  # 记录已下载视频的文件
     }
 
     # video_info_list = []
