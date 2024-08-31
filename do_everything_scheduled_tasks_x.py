@@ -12,7 +12,7 @@ def do_everything_x2zh():
 
     print("执行，X译中，任务。。。。。。")
     do_everything(
-        root_folder='videos_20240821',
+        root_folder='videos',
         url='https://youtube.com/playlist?list=PLxjtcx2z5_439PyJFNx4XOS0qos6en-a-',
         num_videos=10000,
         resolution='1080p',

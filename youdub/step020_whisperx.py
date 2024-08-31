@@ -19,11 +19,11 @@ language_code = None
 align_metadata = None
 
 def init_whisperx():
-    load_whisper_model()
+    #load_whisper_model()
     load_align_model()
     #load_diarize_model()
     
-def load_whisper_model(model_name: str = 'distil-large-v2', download_root = 'models/ASR/whisper', device='auto'):
+def load_whisper_model(model_name: str = 'large-v3', download_root = 'models/ASR/whisper', device='auto'):
     if model_name == 'large':
         model_name = 'large-v3'
     global whisper_model
@@ -86,7 +86,7 @@ def merge_segments(transcript, ending='!"\').:;?]}~'):
 
     return merged_transcription
 
-def transcribe_audio(folder, model_name: str = 'distil-large-v2', download_root='models/ASR/whisper', device='auto', batch_size=16, diarization=False,min_speakers=None, max_speakers=None):
+def transcribe_audio(folder, model_name: str = 'large-v3', download_root='models/ASR/whisper', device='auto', batch_size=16, diarization=False,min_speakers=None, max_speakers=None):
     if os.path.exists(os.path.join(folder, 'transcript.json')):
         logger.info(f'Transcript already exists in {folder}')
         return True
@@ -145,7 +145,7 @@ def generate_speaker_audio(folder, transcript):
         save_wav(audio, speaker_file_path)
             
 
-def transcribe_all_audio_under_folder(folder, model_name: str = 'distil-large-v2', download_root='models/ASR/whisper', device='auto', batch_size=16, diarization=False, min_speakers=None, max_speakers=None):
+def transcribe_all_audio_under_folder(folder, model_name: str = 'large-v3', download_root='models/ASR/whisper', device='auto', batch_size=16, diarization=False, min_speakers=None, max_speakers=None):
     for root, dirs, files in os.walk(folder):
         if 'audio_vocals.wav' in files and 'transcript.json' not in files:
             transcribe_audio(root, model_name,
