@@ -2,6 +2,12 @@ import time
 import gc
 import os
 import sys
+from datetime import datetime
+
+# %%
+def log(message):
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f"{current_time} - {message}")
 
 # 用于跟踪当前要执行的任务
 flag_file = 'task_flag.txt'
@@ -10,7 +16,7 @@ flag_file = 'task_flag.txt'
 def do_everything_x2zh():
     from youdub.do_everything import do_everything
 
-    print("执行，X译中，任务。。。。。。")
+    log("执行，X译中，任务。。。。。。")
     do_everything(
         root_folder='videos',
         url='https://youtube.com/playlist?list=PLxjtcx2z5_439PyJFNx4XOS0qos6en-a-',
@@ -43,7 +49,7 @@ def do_everything_x2zh():
 def do_everything_zh2en():
     from youdub.do_everything_zh2en import do_everything
     
-    print("执行，中译英，任务。。。。。。")
+    log("执行，中译英，任务。。。。。。")
     do_everything(
         root_folder='videos_zh2en',
         url='https://www.bilibili.com/list/ml136498038',
@@ -75,7 +81,7 @@ def do_everything_zh2en():
 
 def restart_program():
     """重启当前的 Python 程序"""
-    print("\n\n重启，X译X，任务脚本。。。。。。\n\n")
+    log("\n\n重启，X译X，任务脚本。。。。。。\n\n")
     os.execv(sys.executable, ['python'] + sys.argv)
 
 
@@ -105,7 +111,7 @@ else:
     set_next_task('x2zh')
 
 # 等待 3 分钟后重启程序
-print("等待 3 分钟后重启程序...")
+log("等待 3 分钟后重启程序...")
 time.sleep(60 * 3)
 
 # 重启脚本以确保内存完全释放

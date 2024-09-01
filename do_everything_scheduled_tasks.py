@@ -1,8 +1,13 @@
 import time
 from youdub.do_everything import do_everything
+from datetime import datetime
 
+# %%
+def log(message):
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f"{current_time} - {message}")
 
-print("定时执行所有任务，将播放列表的视频下载到本地，然后进行语音分离、语音识别、翻译、语音合成、视频合成、视频信息生成。")
+log("定时执行所有任务，将播放列表的视频下载到本地，然后进行语音分离、语音识别、翻译、语音合成、视频合成、视频信息生成。")
 while True:
     do_everything(
         root_folder='videos',
@@ -29,5 +34,5 @@ while True:
         auto_upload_video=False
     )
 
-    print("等待10分钟后再次执行 ...")
+    log("等待10分钟后再次执行 ...")
     time.sleep(60*10)

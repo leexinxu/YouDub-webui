@@ -1,8 +1,13 @@
 import time
 from youdub.do_everything_zh2en import do_everything
+from datetime import datetime
 
+# %%
+def log(message):
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f"{current_time} - {message}")
 
-print("执行，中译英，任务。")
+log("执行，中译英，任务。")
 while True:
     do_everything(
         root_folder='videos_zh2en',
@@ -29,5 +34,5 @@ while True:
         auto_upload_video=False
     )
 
-    print("等待10分钟后再次执行 ...")
+    log("等待10分钟后再次执行 ...")
     time.sleep(60*10)
