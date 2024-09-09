@@ -259,11 +259,13 @@ def _translate(summary, transcript, target_language='简体中文'):
     info = f'This is a video called "{summary["title"]}". {summary["summary"]}.'
     full_translation = []
     fixed_message = [
-        {'role': 'system', 'content': f'You are a expert in the field of this video.\n{info}\nTranslate the sentence into {target_language}.下面我让你来充当翻译家，你的目标是把任何语言翻译成中文，请翻译时不要带翻译腔，而是要翻译得自然、流畅和地道，使用优美和高雅的表达方式。请将人工智能的“agent”翻译为“智能体”，强化学习中是`Q-Learning`而不是`Queue Learning`。数学公式写成plain text，不要使用latex。确保翻译正确和简洁。注意信达雅。'},
+        {'role': 'system', 'content': f'You are a expert in the field of this video.\n{info}\nTranslate the sentence into {target_language}.下面我让你来充当翻译家，你的目标是把任何语言翻译成中文，请翻译时不要带翻译腔，而是要翻译得自然、流畅和地道，使用优美和高雅的表达方式。请将人工智能的“agent”翻译为“智能体”，强化学习中是`Q-Learning`而不是`Queue Learning`。数学公式写成plain text，不要使用latex。武器中的“caliber 50”，翻译成“口径 50”，后面不要带毫米。确保翻译正确和简洁。注意信达雅。'},
         {'role': 'user', 'content': '使用地道的中文Translate:"Knowledge is power."'},
         {'role': 'assistant', 'content': '翻译：“知识就是力量。”'},
         {'role': 'user', 'content': '使用地道的中文Translate:"To be or not to be, that is the question."'},
-        {'role': 'assistant', 'content': '翻译：“生存还是毁灭，这是一个值得考虑的问题。”'},]
+        {'role': 'assistant', 'content': '翻译：“生存还是毁灭，这是一个值得考虑的问题。”'},
+        {'role': 'user', 'content': '使用地道的中文Translate:"The weapon you see is the M2HB machine gun with caliber 50, the most popular machine gun in the world."'},
+        {'role': 'assistant', 'content': '翻译：“你看到的武器是M2HB机枪，口径为50，是世界上最受欢迎的机枪。”'}]
     
     history = []
     for line in transcript:
