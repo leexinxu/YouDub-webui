@@ -10,8 +10,12 @@ from .utils import save_wav, save_wav_norm
 from .step041_tts_bytedance import tts as bytedance_tts
 #from .step042_tts_xtts import tts as xtts_tts
 from .step043_tts_chattts import tts as chattts_tts
+from .step044_tts_gpt_sovits_tts import gpt_sovits_tts
 from .cn_tx import TextNorm
 from audiostretchy.stretch import stretch_audio
+
+from langdetect import detect
+
 normalizer = TextNorm()
 def preprocess_text(text):
     text = text.replace('AI', '人工智能')
@@ -59,8 +63,12 @@ def generate_wavs(folder, force_bytedance=False):
         #     bytedance_tts(text, output_path, speaker_wav)
         # else:
         #     xtts_tts(text, output_path, speaker_wav)
-        
-        chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb.pt')
+
+        if '原音色克隆' in folder: 
+            if not gpt_sovits_tts(text, 'zh', output_path, speaker_wav, 'auto', ''):
+                chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb.pt')
+        else:
+            chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb.pt')
 
         start = line['start']
         end = line['end']
@@ -110,5 +118,5 @@ def generate_all_wavs_under_folder(root_folder, force_bytedance=False):
     return f'Generated all wavs under {root_folder}'
 
 if __name__ == '__main__':
-    folder = r'videos\TED-Ed\20211214 Would you raise the bird that murdered your children？ - Steve Rothstein'
+    folder = r'videos/原音色克隆/Hot Freestyle/20241011 2 Chainz Talks With Teslas New Robot '
     generate_wavs(folder, force_bytedance=False)

@@ -34,7 +34,7 @@ def download_single_video(info, folder_path, resolution='1080p'):
     if upload_date == 'Unknown':
         return None
     
-    output_folder = os.path.join(folder_path, sanitized_uploader, f'{upload_date} {sanitized_title}')
+    output_folder = os.path.join(folder_path, info.get('playlist_title', 'No Playlist'), sanitized_uploader, f'{upload_date} {sanitized_title}')
     if os.path.exists(os.path.join(output_folder, 'download.mp4')):
         logger.info(f'Video already downloaded in {output_folder}')
         return output_folder
@@ -45,7 +45,7 @@ def download_single_video(info, folder_path, resolution='1080p'):
         'format': f'bestvideo[ext=mp4][height<={resolution}]+bestaudio[ext=m4a]/best[ext=mp4]/best',
         'writeinfojson': True,
         'writethumbnail': True,
-        'outtmpl': os.path.join(folder_path, sanitized_uploader, f'{upload_date} {sanitized_title}', 'download'),
+        'outtmpl': os.path.join(output_folder, 'download'),
         'ignoreerrors': True,
         'download_archive': 'downloaded.txt',  # 记录已下载视频的文件
     }
@@ -75,7 +75,12 @@ def get_info_list_from_url(url, num_videos):
     # video_info_list = []
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         for u in url:
-            result = ydl.extract_info(u, download=False)
+            result = ydl.extract_info(u, download=False)   
+            # 检查 result 是否为 None
+            if result is None:
+                print(f"无法从 {u} 提取信息，result 为 None")
+                continue
+            # 检查是否是播放列表
             if 'entries' in result:
                 # Playlist
                 # video_info_list.extend(result['entries'])

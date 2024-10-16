@@ -61,8 +61,11 @@ def process_video(info, root_folder, resolution, demucs_model, device, shifts, w
             logger.info(f'Process video in {folder}')
             separate_all_audio_under_folder(
                 folder, model_name=demucs_model, device=device, progress=True, shifts=shifts)
+            
+
             transcribe_all_audio_under_folder(
-                folder, model_name=whisper_model, download_root=whisper_download_root, device=device, batch_size=whisper_batch_size, diarization=whisper_diarization, 
+                folder, model_name=whisper_model, download_root=whisper_download_root, device=device, batch_size=whisper_batch_size,
+                diarization=True if '原音色克隆' in info.get('playlist_title', 'No Playlist') else whisper_diarization, 
                 min_speakers=whisper_min_speakers,
                 max_speakers=whisper_max_speakers)
             
