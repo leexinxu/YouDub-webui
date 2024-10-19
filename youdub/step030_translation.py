@@ -42,13 +42,17 @@ def summarize(info, transcript, target_language='简体中文'):
     base_url=os.getenv('OPENAI_API_BASE', 'https://api.openai.com/v1'),
     api_key=os.getenv('OPENAI_API_KEY')
 )
-    transcript = ' '.join(line['text'] for line in transcript)
-    transcript = ensure_transcript_length(transcript, max_length=2000)
-    info_message = f'Title: "{info["title"]}" Author: "{info["uploader"]}". ' 
-    # info_message = ''
-    
-    full_description = f'The following is the full content of the video:\n{info_message}\n{transcript}\n{info_message}\nAccording to the above content, detailedly Summarize the video in JSON format:\n```json\n{{"title": "", "summary": ""}}\n```'
-    
+    if transcript is None:
+        info_message = f'Title: "{info["title"]}" Author: "{info["uploader"]}" Description: "{info["description"]}". '
+        full_description = f'The following is the full content of the video:\n{info_message}\nAccording to the above content, detailedly Summarize the video in JSON format:\n```json\n{{"title": "", "summary": ""}}\n```'
+    else:
+        transcript = ' '.join(line['text'] for line in transcript)
+        transcript = ensure_transcript_length(transcript, max_length=2000)
+        info_message = f'Title: "{info["title"]}" Author: "{info["uploader"]}". ' 
+        # info_message = ''
+        
+        full_description = f'The following is the full content of the video:\n{info_message}\n{transcript}\n{info_message}\nAccording to the above content, detailedly Summarize the video in JSON format:\n```json\n{{"title": "", "summary": ""}}\n```'
+        
     messages = [
         {'role': 'system',
             'content': f'You are a expert in the field of this video. Please detailedly summarize the video in JSON format.\n```json\n{{"title": "the title of the video", "summary", "the summary of the video"}}\n```'},
@@ -355,5 +359,12 @@ def translate_all_transcript_under_folder(folder, target_language):
     return f'Translated all videos under {folder}'
 
 if __name__ == '__main__':
-    translate_all_transcript_under_folder(
-        r'videos\TED-Ed\20240227 Can you solve the magical maze riddle - Alex Rosenthal', '简体中文')
+    #translate_all_transcript_under_folder(
+    #    r'videos\TED-Ed\20240227 Can you solve the magical maze riddle - Alex Rosenthal', '简体中文')
+    
+    folder = 'videos/搬运/Sukhbir Skill/20240926 Powerful Truck Project project'
+    with open(os.path.join(folder, 'download.info.json'), 'r', encoding='utf-8') as f:
+        info = json.load(f)
+    summary = summarize(get_necessary_info(info), None)
+    with open(os.path.join(folder, 'summary.json'), 'w', encoding='utf-8') as f:
+        json.dump(summary, f, indent=2, ensure_ascii=False)

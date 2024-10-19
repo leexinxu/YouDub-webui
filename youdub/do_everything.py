@@ -5,7 +5,7 @@ from loguru import logger
 from .step000_video_downloader import get_info_list_from_url, download_single_video, get_target_folder
 from .step010_demucs_vr import separate_all_audio_under_folder, init_demucs
 from .step020_whisperx import transcribe_all_audio_under_folder, init_whisperx
-from .step030_translation import translate_all_transcript_under_folder
+from .step030_translation import translate_all_transcript_under_folder, get_necessary_info, summarize
 from .step040_tts import generate_all_wavs_under_folder
 #from .step042_tts_xtts import init_TTS
 from .step050_synthesize_video import synthesize_all_video_under_folder
@@ -58,6 +58,23 @@ def process_video(info, root_folder, resolution, demucs_model, device, shifts, w
             #     if bilibili_info['results'][0]['code'] == 0:
             #         logger.info(f'Video already uploaded in {folder}')
             #         return True
+
+            # 如果是搬运，直接完成
+            if '搬运' in info.get('playlist_title', 'No Playlist'):
+                # 总结
+                summary = summarize(info=get_necessary_info(info), transcript=None, target_language=translation_target_language)
+                with open(os.path.join(folder, 'summary.json'), 'w', encoding='utf-8') as f:
+                    json.dump(summary, f, indent=2, ensure_ascii=False)
+                
+                os.rename(os.path.join(folder, 'download.mp4'), os.path.join(folder, 'video.mp4'))  # 修改视频文件名
+                os.rename(os.path.join(folder, 'download.webp'), os.path.join(folder, 'video.png')) # 修改图片文件名
+                
+                with open(os.path.join(folder, 'ok.json'), 'w', encoding='utf-8') as f:
+                    json.dump({}, f, ensure_ascii=False, indent=4)  # 创建完成ok.json
+                    
+                logger.info(f'搬运视频，直接完成')
+                return True
+
             logger.info(f'Process video in {folder}')
             separate_all_audio_under_folder(
                 folder, model_name=demucs_model, device=device, progress=True, shifts=shifts)
@@ -65,14 +82,17 @@ def process_video(info, root_folder, resolution, demucs_model, device, shifts, w
 
             transcribe_all_audio_under_folder(
                 folder, model_name=whisper_model, download_root=whisper_download_root, device=device, batch_size=whisper_batch_size,
-                diarization=True if '原音色克隆' in info.get('playlist_title', 'No Playlist') else whisper_diarization, 
+                diarization=True if '原音色克隆' in info.get('playlist_title', 'No Playlist') or '多角色' in info.get('playlist_title', 'No Playlist') else whisper_diarization, 
                 min_speakers=whisper_min_speakers,
                 max_speakers=whisper_max_speakers)
             
             translate_all_transcript_under_folder(
                 folder, target_language=translation_target_language
             )
-            generate_all_wavs_under_folder(folder, force_bytedance=force_bytedance)
+            
+            # 如是是中字，则跳过tts
+            if '中字' not in info.get('playlist_title', 'No Playlist'):
+                generate_all_wavs_under_folder(folder, force_bytedance=force_bytedance)
             synthesize_all_video_under_folder(folder, subtitles=subtitles, speed_up=speed_up, fps=fps, resolution=target_resolution)
             generate_all_info_under_folder(folder)
             if auto_upload_video:

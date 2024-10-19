@@ -105,6 +105,9 @@ def synthesize_video(folder, subtitles=True, speed_up=1.05, fps=30, resolution='
     translation_path = os.path.join(folder, 'translation.json')
     input_audio = os.path.join(folder, 'audio_combined.wav')
     input_video = os.path.join(folder, 'download.mp4')
+
+    if not os.path.exists(input_audio):
+        input_audio = os.path.join(folder, 'audio.wav')
     
     if not os.path.exists(translation_path) or not os.path.exists(input_audio):
         return
@@ -154,5 +157,5 @@ def synthesize_all_video_under_folder(folder, subtitles=True, speed_up=1.05, fps
                              speed_up=speed_up, fps=fps, resolution=resolution)
     return f'Synthesized all videos under {folder}'
 if __name__ == '__main__':
-    folder = r'videos\3Blue1Brown\20231207 Im still astounded this is true'
+    folder = r'videos/多角色/Sky News/20241019 Liam Payne death Father kisses pictures outside hotel where One Direction star died'
     synthesize_all_video_under_folder(folder, subtitles=True)

@@ -16,6 +16,8 @@ from audiostretchy.stretch import stretch_audio
 
 from langdetect import detect
 
+from .voice_gender_classifier import gender_identify
+
 normalizer = TextNorm()
 def preprocess_text(text):
     text = text.replace('AI', '人工智能')
@@ -37,6 +39,7 @@ def adjust_audio_length(wav_path, desired_length, sample_rate = 24000, min_speed
     wav, sample_rate = librosa.load(target_path, sr=sample_rate)
     return wav[:int(desired_length*sample_rate)], desired_length
 
+
 def generate_wavs(folder, force_bytedance=False):
     transcript_path = os.path.join(folder, 'translation.json')
     output_folder = os.path.join(folder, 'wavs')
@@ -50,6 +53,43 @@ def generate_wavs(folder, force_bytedance=False):
         speakers.add(line['speaker'])
     num_speakers = len(speakers)
     logger.info(f'Found {num_speakers} speakers')
+
+    if '多角色' in folder:
+        chattts_voice = {
+            "男": [
+                "seed_2222_restored_emb-covert.pt",
+                "seed_1346_restored_emb-covert.pt",
+                "seed_1457_restored_emb-covert.pt",
+                "seed_1509_restored_emb-covert.pt",
+                "seed_1345_restored_emb-covert.pt"
+                
+            ],
+            "女": [
+                "seed_1754_restored_emb-covert.pt",
+                "seed_742_restored_emb-covert.pt",
+                "seed_1742_restored_emb-covert.pt",
+                "seed_2_restored_emb-covert.pt",
+                "seed_2218_restored_emb-covert.pt"
+            ]
+        }
+
+        # 分配配音角色
+        speaker_roles = {}
+        male_index = 0
+        female_index = 0
+
+        for speaker in speakers:
+            gender = gender_identify(os.path.join(folder, 'SPEAKER', f'{speaker}.wav'))
+            if "male" in gender:
+                # 按顺序分配男性角色
+                role = chattts_voice["男"][male_index % len(chattts_voice["男"])]  # 循环分配男性角色
+                male_index += 1  # 更新男性角色索引
+            else:
+                # 按顺序分配女性角色
+                role = chattts_voice["女"][female_index % len(chattts_voice["女"])]  # 循环分配女性角色
+                female_index += 1  # 更新女性角色索引
+
+            speaker_roles[speaker] = role
     
     full_wav = np.zeros((0, ))
     for i, line in enumerate(transcript):
@@ -66,9 +106,13 @@ def generate_wavs(folder, force_bytedance=False):
 
         if '原音色克隆' in folder: 
             if not gpt_sovits_tts(text, 'zh', output_path, speaker_wav, 'auto', ''):
-                chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb.pt')
+                chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_1754_restored_emb-covert.pt')
+        elif '多角色' in folder:
+            chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type=speaker_roles[speaker])
+        elif '中配男' in folder:
+            chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb-covert.pt')
         else:
-            chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_2222_restored_emb.pt')
+            chattts_tts(text=text, output_path=output_path, speaker_wav=None, voice_type='seed_1754_restored_emb-covert.pt')
 
         start = line['start']
         end = line['end']
@@ -119,4 +163,6 @@ def generate_all_wavs_under_folder(root_folder, force_bytedance=False):
 
 if __name__ == '__main__':
     folder = r'videos/原音色克隆/Hot Freestyle/20241011 2 Chainz Talks With Teslas New Robot '
-    generate_wavs(folder, force_bytedance=False)
+    #generate_wavs(folder, force_bytedance=False)
+    gender = gender_identify('/Volumes/Data/AI/YouDub-webui/test/hello.wav')
+    print(gender)

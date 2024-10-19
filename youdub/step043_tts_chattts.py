@@ -99,7 +99,7 @@ def generate_speaker_to_voice_type(folder):
     return speaker_to_voice_type
     
 
-def tts(text, output_path, speaker_wav, voice_type=None):
+def tts(text, output_path, speaker_wav, voice_type='seed_1754_restored_emb-covert.pt'):
     if os.path.exists(output_path):
         logger.info(f'ChatTTS {text} 已存在')
         return
@@ -111,7 +111,7 @@ def tts(text, output_path, speaker_wav, voice_type=None):
     for retry in range(3):
         try:
             api_url = "http://127.0.0.1:9966/tts"
-            data = {"text":text.strip(),"voice": 'seed_1754_restored_emb-covert.pt','prompt':'','is_split':1,"speed": 8,"temperature": 0.1}
+            data = {"text":text.strip(),"voice": voice_type,'prompt':'','is_split':1,"speed": 8,"temperature": 0.1}
             res = requests.post(api_url,data=data,proxies={"http":"","https":""},timeout=3600)
             res=res.json()
             if "url" in res:
