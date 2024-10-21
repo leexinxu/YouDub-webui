@@ -80,7 +80,8 @@ def generate_wavs(folder, force_bytedance=False):
 
         for speaker in speakers:
             gender = gender_identify(os.path.join(folder, 'SPEAKER', f'{speaker}.wav'))
-            if "male" in gender:
+            logger.info(f'Identified speaker {speaker} as {gender}')
+            if "male" == gender:
                 # 按顺序分配男性角色
                 role = chattts_voice["男"][male_index % len(chattts_voice["男"])]  # 循环分配男性角色
                 male_index += 1  # 更新男性角色索引
@@ -90,7 +91,8 @@ def generate_wavs(folder, force_bytedance=False):
                 female_index += 1  # 更新女性角色索引
 
             speaker_roles[speaker] = role
-    
+        logger.info(f'{speaker_roles=}')
+        
     full_wav = np.zeros((0, ))
     for i, line in enumerate(transcript):
         speaker = line['speaker']

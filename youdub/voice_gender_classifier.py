@@ -19,3 +19,6 @@ def gender_identify(voice_file):
         # 异常处理
         print(f"发生错误: {e}")
         return ''
+    
+if __name__ == '__main__':
+    print(gender_identify(r'videos/多角色/CNBC Television/20241017 Google Labs VP Josh Woodward on new AI podcast tool features/SPEAKER/SPEAKER_01.wav'))
