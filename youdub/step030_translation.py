@@ -306,6 +306,9 @@ def _translate(summary, transcript, target_language='简体中文'):
                             'OPENAI_API_BASE', 'https://api.openai.com/v1'),
                         api_key=os.getenv('OPENAI_API_KEY')
                     )
+                elif '429' in str(e):
+                    logger.info("Rate limit reached, waiting for 1 hour")
+                    time.sleep(3600)  # Wait for 1 hour as per the query
                 # logger.warning('翻译失败')
                 time.sleep(1)
         full_translation.append(translation)
