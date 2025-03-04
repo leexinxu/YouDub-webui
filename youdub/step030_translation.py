@@ -143,6 +143,10 @@ def translation_postprocess(result):
     return result
 
 def valid_translation(text, translation):
+
+    # 增加判断条件，如果翻译结果过长，返回翻译失败
+    if len(translation) > len(text) * 3:
+        return False, f'The translation is too long. Only translate the following sentence and give me the result.'
     
     if (translation.startswith('```') and translation.endswith('```')):
         translation = translation[3:-3]
