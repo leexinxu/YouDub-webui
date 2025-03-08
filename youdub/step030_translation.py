@@ -303,7 +303,7 @@ def _translate(summary, transcript, target_language='简体中文'):
                 if re.search(think_pattern, translation, re.DOTALL):
                     # 如果存在，去掉 <think>...</think> 部分
                     translation = re.sub(think_pattern, '', translation, flags=re.DOTALL).strip()
-                    logger.info(f'去掉推理过程后的译文：{translation}')
+                    logger.info(f'去掉推理过程的译文：{translation}')
 
                 success, translation = valid_translation(text, translation)
                 if not success:
