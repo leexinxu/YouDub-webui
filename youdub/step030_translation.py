@@ -322,6 +322,9 @@ def _translate(summary, transcript, target_language='简体中文'):
                 elif '429' in str(e):
                     logger.info("Rate limit reached, waiting for 1 hour")
                     time.sleep(3600)  # Wait for 1 hour as per the query
+                elif '502' in str(e):
+                    logger.info("加白失效或EasyConnect断开，等待 1 小时。。。")
+                    time.sleep(3600)  # Wait for 1 hour as per the query
                 # logger.warning('翻译失败')
                 time.sleep(1)
         full_translation.append(translation)
