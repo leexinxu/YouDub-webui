@@ -296,6 +296,15 @@ def _translate(summary, transcript, target_language='简体中文'):
                 translation = response.choices[0].message.content.replace('\n', '')
                 logger.info(f'原文：{text}')
                 logger.info(f'译文：{translation}')
+
+                # 定义正则表达式，匹配 <think>...</think> 标签及其内容
+                think_pattern = r'<think>.*?</think>'
+                # 第一步：判断是否存在 <think> 标签
+                if re.search(think_pattern, translation, re.DOTALL):
+                    # 如果存在，去掉 <think>...</think> 部分
+                    translation = re.sub(think_pattern, '', translation, flags=re.DOTALL).strip()
+                    logger.info(f'去掉推理过程后的译文：{translation}')
+
                 success, translation = valid_translation(text, translation)
                 if not success:
                     retry_message += translation
